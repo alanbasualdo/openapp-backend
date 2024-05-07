@@ -1,24 +1,29 @@
-const Position = require("../../models/Position/Position");
+const Tickets = require("../../models/Tickets/Tickets");
 
-const postPosition = async (req, res) => {
+const postTicket = async (req, res) => {
   try {
-    const { name, level } = req.body;
-    const position = await Position.findOne({ name });
-    if (position) {
-      return res.status(400).json({
-        success: false,
-        message: "El puesto ya se encuentra registrado",
-      });
-    }
-    const newPosition = new Position({
-      name,
-      level,
+    const { area, category, subcategory, title, description, observers } =
+      JSON.parse(req.body.ticket);
+    const { user } = req;
+    const fileName = req.files ? req.files.map((file) => file.filename) : [];
+
+    const newTicket = new Tickets({
+      area,
+      category,
+      subcategory,
+      title,
+      description,
+      observers,
+      attachments: fileName,
+      createdBy: user._id,
     });
-    await newPosition.save();
+
+    await newTicket.save();
+
     res.status(201).json({
       success: true,
-      message: "Puesto creado exitosamente",
-      newPosition,
+      message: "Ticket creado exitosamente",
+      newTicket,
     });
   } catch (error) {
     console.error(error.message);
@@ -29,13 +34,16 @@ const postPosition = async (req, res) => {
   }
 };
 
-const getPositions = async (req, res) => {
+const getTickets = async (req, res) => {
   try {
-    const positions = await Position.find().sort({ level: 1 });
+    const tickets = await Tickets.find()
+      .populate("createdBy")
+      .populate("takenBy")
+      .sort({ createdAt: -1 });
     res.status(200).json({
       success: true,
-      message: "Lista de puestos obtenida exitosamente",
-      positions,
+      message: "Lista de tickets obtenida exitosamente",
+      tickets,
     });
   } catch (error) {
     console.error(error.message);
@@ -46,7 +54,7 @@ const getPositions = async (req, res) => {
   }
 };
 
-const deletePosition = async (req, res) => {
+const deleteTicket = async (req, res) => {
   try {
     const { id } = req.params;
     await Position.findByIdAndDelete(id);
@@ -63,36 +71,8 @@ const deletePosition = async (req, res) => {
   }
 };
 
-const putPosition = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { level } = req.body;
-    const position = await Position.findById(id);
-    if (!position) {
-      return res.status(404).json({
-        success: false,
-        message: "No se encontró el puesto",
-      });
-    }
-    position.level = level;
-    await position.save();
-    res.status(200).json({
-      success: true,
-      message: "Puesto actualizado exitosamente",
-      position,
-    });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({
-      success: false,
-      message: `Error: ${error.message}`,
-    });
-  }
-};
-
 module.exports = {
-  postPosition,
-  getPositions,
-  deletePosition,
-  putPosition,
+  postTicket,
+  getTickets,
+  deleteTicket,
 };

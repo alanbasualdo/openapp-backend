@@ -1,10 +1,11 @@
-const { login, renewToken } = require("../../controllers/users/authController");
+const { postTicket, getTickets } = require("../../controllers/tickets/tickets");
 const { checkJWT } = require("../../helpers/generateJWT");
+const uploadFile = require("../../middlewares/multer");
 
 const router = require("express").Router();
 
-router.post("/login", login);
+router.post("/post-ticket", checkJWT, uploadFile, postTicket);
 
-router.get("/renew", checkJWT, renewToken);
+router.get("/get-tickets", checkJWT, getTickets);
 
 module.exports = router;

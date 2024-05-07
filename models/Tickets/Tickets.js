@@ -3,14 +3,15 @@ const { Schema, model } = require("mongoose");
 const ticketsSchema = new Schema(
   {
     area: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Area",
       required: true,
     },
     category: {
       type: String,
       required: true,
     },
-    subCategory: {
+    subcategory: {
       type: String,
       required: true,
     },
@@ -22,24 +23,32 @@ const ticketsSchema = new Schema(
       type: String,
       required: true,
     },
+    observers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     attachments: {
       type: [String],
     },
-    observers: {
-      type: [String],
-    },
     createdBy: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     status: {
       type: String,
-      required: true,
       default: "Pendiente",
     },
     priority: {
-      type: String,
-      required: true,
+      type: Number,
+      default: "3",
+    },
+    takenBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
     },
   },
   {
