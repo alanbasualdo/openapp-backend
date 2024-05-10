@@ -76,6 +76,28 @@ const getTicketsByArea = async (req, res) => {
   }
 };
 
+const getTicketsByUser = async (req, res) => {
+  try {
+    const { user } = req.params;
+    const tickets = await Tickets.find({ createdBy: user })
+      .populate("createdBy")
+      .populate("takenBy")
+      .populate("observers")
+      .sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      message: "Lista de tickets obtenida exitosamente",
+      tickets,
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: `Error: ${error.message}`,
+    });
+  }
+};
+
 const deleteTicket = async (req, res) => {
   try {
     const { id } = req.params;
@@ -97,5 +119,6 @@ module.exports = {
   postTicket,
   getTickets,
   getTicketsByArea,
+  getTicketsByUser,
   deleteTicket,
 };
