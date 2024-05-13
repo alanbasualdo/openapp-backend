@@ -79,7 +79,9 @@ const getTicketsByArea = async (req, res) => {
 const getTicketsByUser = async (req, res) => {
   try {
     const { user } = req.params;
-    const tickets = await Tickets.find({ createdBy: user })
+    const tickets = await Tickets.find({
+      $or: [{ createdBy: user }, { observers: user }],
+    })
       .populate("createdBy")
       .populate("takenBy")
       .populate("observers")
