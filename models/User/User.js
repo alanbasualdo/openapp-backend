@@ -54,6 +54,9 @@ const userSchema = new Schema(
     permissions: {
       type: String,
     },
+    userPhoto: {
+      type: String,
+    },
     state: {
       type: Boolean,
       default: true,

@@ -16,10 +16,14 @@ const postUser = async (req, res) => {
       departureDate,
       payroll,
       branch,
-      city,
+      area,
+      subarea,
       position,
       permissions,
-    } = req.body;
+    } = JSON.parse(req.body.user);
+
+    const fileName =
+      req.files && req.files.length > 0 ? req.files[0].filename : null;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -44,9 +48,11 @@ const postUser = async (req, res) => {
       departureDate,
       payroll,
       branch,
-      city,
+      area,
+      subarea,
       position,
       permissions,
+      userPhoto: fileName,
     });
 
     await newUser.save();
