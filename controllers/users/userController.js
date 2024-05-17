@@ -68,7 +68,11 @@ const getUsers = async (req, res) => {
   try {
     const [total, users] = await Promise.all([
       User.countDocuments(),
-      User.find(),
+      User.find()
+        .populate("branch")
+        .populate("area")
+        .populate("subarea")
+        .populate("position"),
     ]);
     res.json({
       success: true,

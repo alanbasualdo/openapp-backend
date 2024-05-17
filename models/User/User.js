@@ -36,13 +36,20 @@ const userSchema = new Schema(
       type: String,
     },
     branch: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Branch",
     },
-    city: {
-      type: String,
+    area: {
+      type: Schema.Types.ObjectId,
+      ref: "Area",
+    },
+    subarea: {
+      type: Schema.Types.ObjectId,
+      ref: "Subarea",
     },
     position: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Position",
     },
     permissions: {
       type: String,
