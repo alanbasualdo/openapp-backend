@@ -94,7 +94,94 @@ const getUsers = async (req, res) => {
   }
 };
 
+const putUser = async (req, res) => {
+  try {
+    const userId = req.params.id; // Obtiene el ID del usuario desde los parámetros de la ruta
+    const {
+      name,
+      lastName,
+      cuil,
+      birthdate,
+      gender,
+      userName,
+      email,
+      password,
+      admissionDate,
+      departureDate,
+      payroll,
+      branch,
+      area,
+      subarea,
+      position,
+      permissions,
+    } = JSON.parse(req.body.user);
+
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    // Comprueba si el email ha cambiado y si el nuevo email ya está en uso por otro usuario
+    if (email !== existingUser.email) {
+      const emailExists = await User.findOne({ email, _id: { $ne: userId } });
+      if (emailExists) {
+        return res.status(400).json({
+          success: false,
+          message: "El email ya está en uso por otro usuario",
+        });
+      }
+    }
+
+    // Actualiza la foto del usuario si hay una nueva
+    const fileName =
+      req.files && req.files.length > 0
+        ? req.files[0].filename
+        : existingUser.userPhoto;
+
+    // Opcional: Si se proporciona una nueva contraseña, encripta la nueva contraseña
+    if (password) {
+      const salt = bcryptjs.genSaltSync();
+      existingUser.password = bcryptjs.hashSync(password, salt);
+    }
+
+    // Actualiza los demás campos del usuario
+    existingUser.name = name;
+    existingUser.lastName = lastName;
+    existingUser.cuil = cuil;
+    existingUser.birthdate = birthdate;
+    existingUser.gender = gender;
+    existingUser.userName = userName;
+    existingUser.email = email;
+    existingUser.admissionDate = admissionDate;
+    existingUser.departureDate = departureDate;
+    existingUser.payroll = payroll;
+    existingUser.branch = branch;
+    existingUser.area = area;
+    existingUser.subarea = subarea;
+    existingUser.position = position;
+    existingUser.permissions = permissions;
+    existingUser.userPhoto = fileName;
+
+    await existingUser.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Usuario actualizado exitosamente",
+      user: existingUser,
+    });
+  } catch (error) {
+    console.error("Error actualizando usuario:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Hubo un error al actualizar el usuario",
+    });
+  }
+};
+
 module.exports = {
   postUser,
   getUsers,
+  putUser,
 };
