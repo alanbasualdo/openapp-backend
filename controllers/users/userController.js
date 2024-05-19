@@ -20,6 +20,7 @@ const postUser = async (req, res) => {
       subarea,
       position,
       permissions,
+      phoneNumber,
     } = JSON.parse(req.body.user);
 
     const fileName =
@@ -53,6 +54,7 @@ const postUser = async (req, res) => {
       position,
       permissions,
       userPhoto: fileName,
+      phoneNumber,
     });
 
     await newUser.save();
@@ -109,11 +111,12 @@ const putUser = async (req, res) => {
       admissionDate,
       departureDate,
       payroll,
-      branch,
       area,
       subarea,
+      branch,
       position,
       permissions,
+      phoneNumber,
     } = JSON.parse(req.body.user);
 
     const existingUser = await User.findById(userId);
@@ -157,12 +160,13 @@ const putUser = async (req, res) => {
     existingUser.admissionDate = admissionDate;
     existingUser.departureDate = departureDate;
     existingUser.payroll = payroll;
-    existingUser.branch = branch;
     existingUser.area = area;
     existingUser.subarea = subarea;
+    existingUser.branch = branch;
     existingUser.position = position;
     existingUser.permissions = permissions;
     existingUser.userPhoto = fileName;
+    existingUser.phoneNumber = phoneNumber;
 
     await existingUser.save();
 

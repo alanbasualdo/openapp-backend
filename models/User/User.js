@@ -61,6 +61,13 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    phoneNumber: {
+      type: Number,
+    },
+    online: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
