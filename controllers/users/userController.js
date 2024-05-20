@@ -72,6 +72,42 @@ const postUser = async (req, res) => {
   }
 };
 
+const postTestUser = async (req, res) => {
+  try {
+    const { name, lastName, userName, password } = req.body;
+
+    const existingUser = await User.findOne({ userName });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "El usuario ya está registrado" });
+    }
+
+    const salt = bcryptjs.genSaltSync();
+    const hashedPassword = bcryptjs.hashSync(password, salt);
+
+    const newUser = new User({
+      name,
+      lastName,
+      userName,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Usuario creado exitosamente",
+      newUser,
+    });
+  } catch (error) {
+    console.error("Error creando usuario:", error.message);
+    res
+      .status(500)
+      .json({ success: false, message: "Hubo un error al crear el usuario" });
+  }
+};
+
 const getUsers = async (req, res) => {
   try {
     const [total, users] = await Promise.all([
@@ -80,7 +116,8 @@ const getUsers = async (req, res) => {
         .populate("branch")
         .populate("area")
         .populate("subarea")
-        .populate("position"),
+        .populate("position")
+        .sort({ name: 1 }),
     ]);
     res.json({
       success: true,
@@ -107,7 +144,6 @@ const putUser = async (req, res) => {
       gender,
       userName,
       email,
-      password,
       admissionDate,
       departureDate,
       payroll,
@@ -142,12 +178,6 @@ const putUser = async (req, res) => {
       req.files && req.files.length > 0
         ? req.files[0].filename
         : existingUser.userPhoto;
-
-    // Opcional: Si se proporciona una nueva contraseña, encripta la nueva contraseña
-    if (password) {
-      const salt = bcryptjs.genSaltSync();
-      existingUser.password = bcryptjs.hashSync(password, salt);
-    }
 
     // Actualiza los demás campos del usuario
     existingUser.name = name;
@@ -188,4 +218,5 @@ module.exports = {
   postUser,
   getUsers,
   putUser,
+  postTestUser,
 };
