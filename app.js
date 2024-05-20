@@ -7,10 +7,23 @@ const path = require("path");
 // Crear el servidor express
 const app = express();
 
+// Crear el servidor HTTP
+const server = require("http").createServer(app);
+
+// Crear la instancia de Socket.IO y pasarle el servidor HTTP
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+// Importar la lógica de sockets
+require("./sockets")(io);
+
 // Conexión a la base de datos
 mongodbConn();
 
-// Para que sólo se puede consumir la API del dominio que yo permita
+// Para que sólo se pueda consumir la API del dominio que yo permita
 app.use(cors());
 
 // Directorio público
@@ -51,7 +64,7 @@ app.get("*", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
-// Escuchar peticiones
-app.listen(process.env.PORT, () => {
+// Escuchar peticiones en el servidor HTTP
+server.listen(process.env.PORT, () => {
   console.log(`Servidor corriendo en puerto ${process.env.PORT}`);
 });

@@ -214,9 +214,50 @@ const putUser = async (req, res) => {
   }
 };
 
+const putPassword = async (req, res) => {
+  try {
+    const userId = req.params.id; // Asegúrate de que coincida con el parámetro de la ruta en el frontend
+    const { newPassword } = req.body; // Obtiene la nueva contraseña desde el cuerpo de la solicitud
+
+    if (!newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "La nueva contraseña es requerida",
+      });
+    }
+
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    // Genera un hash para la nueva contraseña
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(newPassword, salt);
+
+    // Actualiza la contraseña del usuario
+    existingUser.password = hashedPassword;
+    await existingUser.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Contraseña actualizada exitosamente",
+    });
+  } catch (error) {
+    console.error("Error actualizando la contraseña:", error);
+    res.status(500).json({
+      success: false,
+      message: "Hubo un error al actualizar la contraseña",
+    });
+  }
+};
+
 module.exports = {
   postUser,
   getUsers,
   putUser,
   postTestUser,
+  putPassword,
 };
