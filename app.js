@@ -56,6 +56,7 @@ app.use("/pcs", require("./routes/pcs/computers"));
 
 // Tickets
 app.use("/tickets", require("./routes/tickets/ticketsRoute"));
+app.use("/categories", require("./routes/tickets/categoriesRoute"));
 
 app.use("/attachments", require("./routes/attachmentsRoute"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

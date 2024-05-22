@@ -2,15 +2,15 @@ const Tickets = require("../../models/Tickets/Tickets");
 
 const postTicket = async (req, res) => {
   try {
-    const { area, category, subcategory, title, description, observers } =
-      JSON.parse(req.body.ticket);
+    const { area, category, title, description, observers } = JSON.parse(
+      req.body.ticket
+    );
     const { user } = req;
     const fileName = req.files ? req.files.map((file) => file.filename) : [];
 
     const newTicket = new Tickets({
       area,
       category,
-      subcategory,
       title,
       description,
       observers,

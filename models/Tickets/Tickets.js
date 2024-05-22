@@ -11,10 +11,6 @@ const ticketsSchema = new Schema(
       type: String,
       required: true,
     },
-    subcategory: {
-      type: String,
-      required: true,
-    },
     title: {
       type: String,
       required: true,
