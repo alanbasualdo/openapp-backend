@@ -39,6 +39,7 @@ const getTickets = async (req, res) => {
     const tickets = await Tickets.find()
       .populate("createdBy")
       .populate("takenBy")
+      .populate("observers")
       .populate("category")
       .sort({ createdAt: -1 });
     res.status(200).json({
@@ -228,5 +229,5 @@ module.exports = {
   putObservers,
   putPriority,
   putStatus,
-  deleteTicket
+  deleteTicket,
 };

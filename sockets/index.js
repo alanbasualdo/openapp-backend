@@ -21,9 +21,13 @@ module.exports = (io) => {
       );
     });
 
-    socket.on("change-ticket-status", async ({ ticketId, status }) => {
+    socket.on("change-ticket-status", async ({ ticketId, status, takenBy }) => {
       try {
-        const ticket = await Tickets.findById(ticketId);
+        const ticket = await Tickets.findById(ticketId)
+          .populate("createdBy")
+          .populate("takenBy")
+          .populate("observers")
+          .populate("category");
         if (!ticket) {
           socket.emit("status-change-error", {
             message: "Ticket no encontrado",
@@ -31,10 +35,13 @@ module.exports = (io) => {
           return;
         }
 
+        if (!ticket.takenBy) {
+          ticket.takenBy = takenBy;
+        }
+
         ticket.status = status;
         await ticket.save();
 
-        // Emit the updated ticket back to the client
         io.emit("status-changed", ticket);
       } catch (error) {
         console.error(error.message);
