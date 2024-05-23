@@ -143,23 +143,6 @@ const putObservers = async (req, res) => {
   }
 };
 
-const deleteTicket = async (req, res) => {
-  try {
-    const { id } = req.params;
-    await Position.findByIdAndDelete(id);
-    res.status(200).json({
-      success: true,
-      message: "Puesto eliminado exitosamente",
-    });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({
-      success: false,
-      message: `Error: ${error.message}`,
-    });
-  }
-};
-
 const putPriority = async (req, res) => {
   const { ticketID } = req.params;
   const { priority } = req.body;
@@ -190,12 +173,60 @@ const putPriority = async (req, res) => {
   }
 };
 
+const putStatus = async (req, res) => {
+  const { ticketID } = req.params;
+  const { status } = req.body;
+
+  try {
+    const ticket = await Tickets.findById(ticketID);
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        message: "Ticket no encontrado",
+      });
+    }
+
+    ticket.status = status;
+    await ticket.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Estado actualizado exitosamente",
+      ticket,
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: `Error: ${error.message}`,
+    });
+  }
+};
+
+const deleteTicket = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Position.findByIdAndDelete(id);
+    res.status(200).json({
+      success: true,
+      message: "Puesto eliminado exitosamente",
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: `Error: ${error.message}`,
+    });
+  }
+};
+
 module.exports = {
   postTicket,
   getTickets,
   getTicketsByArea,
   getTicketsByUser,
-  deleteTicket,
   putObservers,
   putPriority,
+  putStatus,
+  deleteTicket
 };

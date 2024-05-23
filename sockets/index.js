@@ -1,3 +1,4 @@
+const Tickets = require("../models/Tickets/Tickets");
 const User = require("../models/User/User");
 
 let onlineUsers = [];
@@ -18,6 +19,29 @@ module.exports = (io) => {
         "online-users-updated",
         Array.from(new Set(onlineUsers.map((user) => user.userId)))
       );
+    });
+
+    socket.on("change-ticket-status", async ({ ticketId, status }) => {
+      try {
+        const ticket = await Tickets.findById(ticketId);
+        if (!ticket) {
+          socket.emit("status-change-error", {
+            message: "Ticket no encontrado",
+          });
+          return;
+        }
+
+        ticket.status = status;
+        await ticket.save();
+
+        // Emit the updated ticket back to the client
+        io.emit("status-changed", ticket);
+      } catch (error) {
+        console.error(error.message);
+        socket.emit("status-change-error", {
+          message: "Error al cambiar el estado del ticket",
+        });
+      }
     });
 
     socket.on("disconnect", () => {

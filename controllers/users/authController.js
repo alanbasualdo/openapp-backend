@@ -5,7 +5,11 @@ const User = require("../../models/User/User");
 const login = async (req, res = response) => {
   const { userName, password } = req.body;
   try {
-    const user = await User.findOne({ userName });
+    const user = await User.findOne({ userName })
+      .populate("area")
+      .populate("branch")
+      .populate("position")
+      .populate("subarea");
     if (!user) {
       return res.json({
         success: false,
@@ -44,7 +48,11 @@ const login = async (req, res = response) => {
 const renewToken = async (req, res = response) => {
   const { user } = req;
   try {
-    const userExists = await User.findById(user._id);
+    const userExists = await User.findById(user._id)
+      .populate("area")
+      .populate("branch")
+      .populate("position")
+      .populate("subarea");
     const token = await generateJWT(user._id);
     res.json({
       success: true,
