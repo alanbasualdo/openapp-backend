@@ -160,6 +160,36 @@ const deleteTicket = async (req, res) => {
   }
 };
 
+const putPriority = async (req, res) => {
+  const { ticketID } = req.params;
+  const { priority } = req.body;
+
+  try {
+    const ticket = await Tickets.findById(ticketID);
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        message: "Ticket no encontrado",
+      });
+    }
+
+    ticket.priority = priority;
+    await ticket.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Prioridad actualizada exitosamente",
+      ticket,
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: `Error: ${error.message}`,
+    });
+  }
+};
+
 module.exports = {
   postTicket,
   getTickets,
@@ -167,4 +197,5 @@ module.exports = {
   getTicketsByUser,
   deleteTicket,
   putObservers,
+  putPriority,
 };

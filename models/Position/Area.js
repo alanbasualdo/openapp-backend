@@ -6,6 +6,11 @@ const areaSchema = new Schema(
       type: String,
       required: true,
     },
+    haveTickets: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   {
     timestamps: true,

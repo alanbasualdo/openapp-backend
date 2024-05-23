@@ -40,7 +40,7 @@ const ticketsSchema = new Schema(
     },
     priority: {
       type: Number,
-      default: "3",
+      default: "2",
     },
     takenBy: {
       type: Schema.Types.ObjectId,

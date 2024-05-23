@@ -4,6 +4,7 @@ const {
   getTicketsByArea,
   getTicketsByUser,
   putObservers,
+  putPriority,
 } = require("../../controllers/tickets/tickets");
 const { checkJWT } = require("../../helpers/generateJWT");
 const uploadFile = require("../../middlewares/multer");
@@ -19,5 +20,7 @@ router.get("/get-tickets-by-area/:area", checkJWT, getTicketsByArea);
 router.get("/get-tickets-by-user/:user", checkJWT, getTicketsByUser);
 
 router.put("/put-observers/:ticketID", checkJWT, putObservers);
+
+router.put("/:ticketID/priority", checkJWT, putPriority);
 
 module.exports = router;
